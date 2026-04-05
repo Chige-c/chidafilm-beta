@@ -1,0 +1,325 @@
+
+
+/* =========================================
+   search.css - 統合・クリーン版
+   ========================================= */
+
+/* --- 1. オーバーレイ全体 --- */
+.search-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; 
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 9999;
+    
+    /* 【超重要】flexを解除し、オーバーレイ自体をスクロールの主役にする */
+    display: block !important; 
+    overflow-y: auto !important; 
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+.search-overlay.active { opacity: 1; visibility: visible; }
+
+/* --- 2. ヘッダー (検索窓) --- */
+.search-header {
+    display: flex; 
+    align-items: center;
+    padding: 5vh 5% 40px !important;
+    
+    /* 【超重要】画面の一番上に画鋲で止める（Sticky） */
+    position: sticky !important;
+    top: 0;
+    z-index: 2000;
+    
+    /* 重要：下のカードが透けないように背景を「真っ黒」に固定する */
+    background: #000 !important; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.search-icon-large { font-size: 32px; color: #fff; margin-right: 15px; }
+#search-input {
+    flex-grow: 1; background: transparent; border: none;
+    color: #fff; font-size: 28px; outline: none;
+}
+#search-input::placeholder { color: #888; }
+.close-search { font-size: 36px; color: #fff; cursor: pointer; transition: color 0.2s; }
+.close-search:hover { color: var(--flixer-red, #e50914); }
+
+/* --- 3. 結果表示エリア --- */
+.search-results-container { 
+    /* 修正：自分ではスクロールせず、親(overlay)に高さを任せる */
+    padding: 10px 5% 100px; 
+    overflow-y: visible !important; 
+}
+.search-meta { font-size: 18px; color: #aaa; margin-bottom: 20px; }
+
+/* --- 4. グリッド (8列設定) --- */
+.search-grid {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 20px;
+    padding-bottom: 50px;
+}
+@media (max-width: 2000px) { .search-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); } }
+@media (max-width: 1400px) { .search-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+@media (max-width: 1024px) { .search-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (max-width: 768px)  { .search-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 480px)  { .search-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* --- 5. ポスターカード本体 --- */
+.search-poster-card {
+    cursor: pointer;
+    width: 100% !important;
+    display: flex; flex-direction: column;
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+    transition: transform 0.2s ease !important;
+    min-width: 0;
+}
+.search-poster-card:hover { transform: scale(1.05) !important; z-index: 10; }
+
+.search-poster-wrapper {
+    width: 100%;
+    aspect-ratio: 2 / 3 !important;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #222;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    position: relative;
+}
+.search-poster-wrapper img {
+    width: 100% !important; height: 100% !important;
+    object-fit: cover !important; display: block;
+}
+
+/* --- 6. バッジデザイン (ここを1箇所に統合) --- */
+.search-badge, .media-type-badge {
+    position: absolute;
+    top: 10px;
+    z-index: 15;
+    height: 22px; 
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    font-size: 12px;
+    font-weight: 900;
+    font-family: 'Noto Sans JP', sans-serif;
+    border-radius: 4px;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    text-shadow: 1px 1px 2px rgba(0,0,0,1);
+    pointer-events: none;
+    line-height: 1; /* 行間を最小に */
+    opacity: 0; 
+    transition: opacity 0.2s ease;
+}
+.search-poster-card:hover .media-type-badge,
+.search-poster-card:hover .search-badge {
+    opacity: 1;
+}
+/* 左側バッジ (映画/番組) */
+.media-type-badge {
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    
+    /* ★ 物理的に文字を上に押し上げる調整 */
+    padding-bottom: 2px; 
+}
+
+/* 右側バッジ (視聴可能) */
+.search-badge {
+    right: 10px;
+    background-color: #4caf50;
+    padding-bottom: 2px;
+    text-shadow: none !important;
+    opacity: 1;
+}
+
+/* --- 7. ホバーオーバーレイ --- */
+.search-hover-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: 15px;
+    box-sizing: border-box;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+}
+.search-poster-card:hover .search-hover-overlay { opacity: 1; }
+
+.hover-year {
+    color: #ccc; font-size: clamp(12px, 1vw, 18px);
+    font-weight: bold; text-align: left; margin-bottom: 4px;
+}
+.search-hover-title {
+    color: #fff; font-size: clamp(14px, 1.2vw, 22px);
+    font-weight: bold; line-height: 1.4; text-align: left;
+    display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.search-request-btn {
+    width: 100%; padding: 12px 0; margin-top: 15px;
+    background-color: #6c5ce7; color: white; border: none;
+    border-radius: 6px; font-size: 14px; font-weight: bold;
+    cursor: pointer; transition: background-color 0.2s;
+}
+.search-request-btn:hover { background-color: #5849be; }
+.search-request-btn:active { transform: scale(0.95); }
+
+.search-request-btn.requested-btn {
+    background-color: #f1c40f !important; 
+    color: #ffffff !important; 
+    
+    
+    cursor: default;
+    border: none !important;
+    
+    /* ★ これが上下を揃える魔法の設定です */
+    display: flex;
+    align-items: center;      /* 上下の中心を合わせる */
+    justify-content: center;  /* 左右の中心に寄せる */
+    gap: 6px;                 /* 文字とアイコンの間の隙間 */
+    
+    line-height: 1;           /* 行間の余計な隙間を消す */
+    padding: 12px 0;
+}
+.search-request-btn.requested-btn svg {
+    /* 1px単位で上下の位置を微調整したい場合はここを使います */
+    position: relative;
+    top: 0px; 
+}
+.search-request-btn.requested-btn:hover {
+    background-color: #f1c40f !important;
+    transform: none !important;
+}
+.search-request-btn.requested-btn:active {
+    transform: none; /* クリックしてもへこまない */
+}
+
+/* --- 8. スクロールバー --- */
+.search-results-container::-webkit-scrollbar { width: 8px; }
+.search-results-container::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================
+   9. カスタム確認モーダル（リクエスト画面）
+   ========================================= */
+.custom-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    /* ★ オーバーレイ自体を少し明るい黒に（真っ黒すぎるとガラス感が消えるため） */
+    background-color: rgba(0, 0, 0, 0.6); 
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 10000; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+
+/* クラスが付与されたらフワッと表示 */
+.custom-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* モーダルの箱本体 */
+.custom-modal {
+    /* ★ 修正：背景色をさらに薄く（0.7 → 0.4）し、少し明るめのグレーを混ぜる */
+    background: rgba(40, 40, 40, 0.4) !important;
+    
+    /* ★ 修正：ぼかしをさらに強くして、後ろの色を抽象的に拡散させる */
+    backdrop-filter: blur(25px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
+    
+    /* ★ 修正：ガラスの「エッジ」を光らせる。これが一番重要です！ */
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    
+    border-radius: 20px; /* 角を少し丸くして柔らかい印象に */
+    padding: 30px;
+    width: 90%;
+    max-width: 420px;
+    
+    /* 影を広く薄くして、宙に浮いている感を出します */
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); 
+    
+    text-align: center;
+    transform: translateY(30px) scale(0.9);
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+/* 表示時のアニメーション（元の位置・サイズに戻る） */
+.custom-modal-overlay.active .custom-modal {
+    transform: translateY(0) scale(1);
+}
+
+.custom-modal-title {
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+
+.custom-modal-text {
+    color: #ccc;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+/* ボタンを横並びにするエリア */
+.custom-modal-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.custom-modal-btn {
+    flex: 1;
+    padding: 12px 0;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.custom-modal-btn:active {
+    transform: scale(0.95);
+}
+
+.cancel-btn {
+    background-color: #333;
+    color: #fff;
+}
+.cancel-btn:hover { background-color: #444; }
+
+.confirm-btn {
+    background-color: #6c5ce7; /* リクエストボタンと同じ青 */
+    color: #fff;
+}
+.confirm-btn:hover { background-color: #5849be; }

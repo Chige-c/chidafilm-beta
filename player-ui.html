@@ -1,0 +1,247 @@
+ <div id="player-container" class="player-container hidden">
+        <div id="big-icon-overlay" class="big-icon-overlay">
+    <svg viewBox="0 0 24 24">
+        <path id="big-icon-path" fill="currentColor" d=""></path>
+    </svg>
+</div>
+    <video id="main-video-player" autoplay></video>
+    <canvas id="player-snapshot" class="player-snapshot hidden"></canvas>
+
+    
+
+    <div id="player-loading-overlay" class="player-loader" style="display: none;">
+        <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+    </div>
+
+    <div id="player-overlays" style="position: absolute; bottom: 150px; right: 50px; display: flex; flex-direction: column; gap: 15px; align-items: flex-end; z-index: 100;">
+        <button id="skip-intro-btn" class="player-overlay-btn hidden" style="background: rgba(0,0,0,0.8); color: white; border: 1px solid white; padding: 10px 20px; cursor: pointer; font-size: 1rem; backdrop-filter: blur(10px);">
+            イントロをスキップ
+        </button>
+        <div id="next-up-card" class="player-overlay-btn hidden" style="background: rgba(20,20,20,0.9); border-left: 4px solid #fff; padding: 15px; width: 250px; cursor: pointer; backdrop-filter: blur(10px);">
+            <div style="font-size: 0.8rem; color: #aaa; margin-bottom: 5px;">次のエピソード</div>
+            <div id="next-up-title" style="font-size: 1rem; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">エピソード名</div>
+            <div id="next-up-timer" style="font-size: 0.7rem; color: #fff; margin-top: 5px;">間もなく開始...</div>
+        </div>
+    </div>
+    
+    <div id="player-ui" class="player-ui-overlay">
+    <div id="volume-indicator" class="volume-indicator-center">
+        <span class="material-symbols-outlined volume-big-icon">volume_up</span>
+        <div class="indicator-bar-container">
+            <div id="indicator-bar-fill" class="indicator-bar-fill"></div>
+        </div>
+        <span id="indicator-percent">100%</span>
+    </div>
+
+    <div class="player-top-left-zone">
+    <button id="close-player-btn" class="close-player-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6z"/></svg>
+    </button>
+    <div id="player-item-title" class="player-item-title"></div>
+</div>
+
+    <div id="playback-stats-overlay" class="player-stats-panel hidden">
+    <div class="stats-header">
+        <span>再生情報 (Stats for Nerds)</span>
+        <button id="close-stats-btn" class="stats-close-icon">×</button>
+    </div>
+    <table class="stats-table">
+        <tr><th>解像度</th><td id="stat-resolution">-</td></tr>
+    <tr><th>ビットレート</th><td id="stat-bitrate">-</td></tr>
+    <tr><th>画質モード</th><td id="stat-mode">-</td></tr>
+    <tr><th>バッファ量</th><td id="stat-buffer">-</td></tr>
+
+    <tr><th>プレイ方法</th><td id="stat-play-method">-</td></tr>
+    <tr><th>ストリーム</th><td id="stat-stream-type">-</td></tr>
+    <tr><th>ドロップフレーム</th><td id="stat-dropped-frames">-</td></tr>
+    <tr><th>コンテナ</th><td id="stat-container">-</td></tr>
+    <tr><th>ファイルサイズ</th><td id="stat-file-size">-</td></tr>
+    <tr><th>映像コーデック</th><td id="stat-codec">-</td></tr>
+    
+    <tr><th>プレイヤー</th><td>Hls.js / Chida Cinema</td></tr>
+    </table>
+</div>
+
+    <div class="player-bottom-panel">
+        <div class="seek-wrapper">
+            <div id="seek-bar-container" class="seek-bar-container">
+                <div id="seek-bar-progress" class="seek-bar-progress"></div>
+                <div id="seek-thumb" class="seek-thumb"></div>
+                <div id="seek-preview-container"></div>
+                <div id="seek-preview-time">0:00</div>
+            </div>
+            <span id="time-remaining">-0:00</span>
+        </div>
+
+        <div class="bottom-controls-row">
+            <div class="left-controls">
+    <button id="prev-episode-btn" class="player-icon-btn" style="display: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24">
+            <path fill="white" d="M5.5 17V7q0-.425.288-.712T6.5 6t.713.288T7.5 7v10q0 .425-.288.713T6.5 18t-.712-.288T5.5 17m11.45-.025l-6.2-4.15q-.225-.15-.337-.362T10.3 12t.113-.462t.337-.363l6.2-4.15q.125-.1.275-.125t.275-.025q.4 0 .7.275t.3.725v8.25q0 .45-.3.725t-.7.275q-.125 0-.275-.025t-.275-.125"/>
+        </svg>
+    </button>
+
+    <button id="player-rewind-btn" class="player-icon-btn" style="position: relative; display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24">
+            <path fill="white" d="M12 22q-1.875 0-3.512-.712t-2.85-1.925t-1.925-2.85T3 13q0-.425.288-.712T4 12t.713.288T5 13q0 2.925 2.038 4.963T12 20t4.963-2.037T19 13t-2.037-4.962T12 6h-.15l.85.85q.3.3.288.7t-.288.7q-.3.3-.712.313t-.713-.288L8.7 5.7q-.3-.3-.3-.7t.3-.7l2.575-2.575q.3-.3.713-.288t.712.313q.275.3.288.7t-.288.7l-.85.85H12q1.875 0 3.513.713t2.85 1.925t1.925 2.85T21 13t-.712 3.513t-1.925 2.85t-2.85 1.925T12 22"/>
+        </svg>
+        <span id="player-rewind-text" style="position: absolute; font-size: 11px; font-weight: bold; margin-top: 1px;">10</span>
+    </button>
+
+    <button class="player-icon-btn" onclick="togglePlay()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24">
+            <path id="play-pause-path" fill="white" d="M8 5.14v14c0 .86.94 1.39 1.67.95l11-7c.7-.44.7-1.46 0-1.9l-11-7c-.73-.44-1.67.09-1.67.95"/>
+        </svg>
+    </button>
+
+    <button id="player-forward-btn" class="player-icon-btn" style="position: relative; display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24">
+            <path fill="white" d="M12 22q-1.875 0-3.512-.712t-2.85-1.925t-1.925-2.85T3 13t.713-3.512t1.924-2.85t2.85-1.925T12 4h.15l-.85-.85q-.275-.275-.275-.687t.275-.713q.3-.3.713-.312t.712.287L15.3 4.3q.275.275.275.7t-.275.7l-2.575 2.575q-.3.3-.712.288T11.3 8.25q-.275-.3-.275-.712t.275-.688l.85-.85H12Q9.075 6 7.038 8.038T5 13t2.038 4.963T12 20q2.65 0 4.625-1.725t2.325-4.35q.05-.4.35-.663T20 13t.7.25t.25.625q-.35 3.475-2.9 5.8T12 22"/>
+        </svg>
+        <span id="player-forward-text" style="position: absolute; font-size: 11px; font-weight: bold; margin-top: 1px;">10</span>
+    </button>
+
+    <button id="next-episode-btn" class="player-icon-btn" style="display: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24">
+            <path fill="white" d="M16.5 17V7q0-.425.288-.712T17.5 6t.713.288T18.5 7v10q0 .425-.288.713T17.5 18t-.712-.288T16.5 17m-11-.875v-8.25q0-.45.3-.725t.7-.275q.125 0 .275.025t.275.125l6.2 4.15q.225.15.338.363T13.7 12t-.112.463t-.338.362l-6.2 4.15q-.125.1-.275.125t-.275.025q-.4 0-.7-.275t-.3-.725"/>
+        </svg>
+    </button>
+</div>
+
+            <div class="right-controls">
+                <div class="volume-control-wrapper">
+                    <div class="volume-slider-popup">
+                        <input type="range" id="volume-range" min="0" max="1" step="0.05" value="1" oninput="changeVolume(this.value)">
+                    </div>
+                    <button class="player-icon-btn" id="mute-btn" onclick="toggleMute()">
+                        <img id="volume-icon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M19 11.975q0-2.075-1.1-3.787t-2.95-2.563q-.375-.175-.55-.537t-.05-.738q.15-.4.538-.575t.787 0Q18.1 4.85 19.55 7.063T21 11.974t-1.45 4.913t-3.875 3.287q-.4.175-.788 0t-.537-.575q-.125-.375.05-.737t.55-.538q1.85-.85 2.95-2.562t1.1-3.788M7 15H4q-.425 0-.712-.288T3 14v-4q0-.425.288-.712T4 9h3l3.3-3.3q.475-.475 1.088-.213t.612.938v11.15q0 .675-.612.938T10.3 18.3zm9.5-3q0 1.05-.475 1.988t-1.25 1.537q-.25.15-.513.013T14 15.1V8.85q0-.3.263-.437t.512.012q.775.625 1.25 1.575t.475 2'/%3E%3C/svg%3E" width="40" height="40">
+                    </button>
+                </div>
+
+                <button id="episode-menu-btn" class="player-icon-btn hidden" onclick="toggleMenu('episode-menu')" title="エピソード">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 21 21'%3E%3Cg fill='none' fill-rule='evenodd' stroke='white' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.5 16.5v-6a2 2 0 0 0-2-2h-9a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2'/%3E%3Cpath d='M16.5 16.5V9.505a3 3 0 0 0-3-3h-.005L4.5 6.521'/%3E%3Cpath d='M18.5 14.5V8.507a4 4 0 0 0-4-4h-.007L6.5 4.52'/%3E%3C/g%3E%3C/svg%3E" width="40" height="40">
+                </button>
+                
+                <button id="audio-menu-btn" class="player-icon-btn" onclick="toggleMenu('audio-menu')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M10 22q-.425 0-.712-.288Q9 21.425 9 21V3q0-.425.288-.713Q9.575 2 10 2t.713.287Q11 2.575 11 3v18q0 .425-.287.712Q10.425 22 10 22Zm-4-6q-.425 0-.713-.288Q5 15.425 5 15V9q0-.425.287-.713Q5.575 8 6 8t.713.287Q7 8.575 7 9v6q0 .425-.287.712Q6.425 16 6 16Zm8 2q-.425 0-.712-.288Q13 17.425 13 17V7q0-.425.288-.713Q13.575 6 14 6t.713.287Q15 6.575 15 7v10q0 .425-.287.712Q14.425 18 14 18Zm4-3q-.425 0-.712-.288Q17 14.425 17 14v-4q0-.425.288-.713Q17.575 9 18 9t.712.287Q19 9.575 19 10v4q0 .425-.288.712Q18.425 15 18 15Z"/></svg>
+                </button>
+                
+                <button id="subtitle-menu-btn" class="player-icon-btn" onclick="toggleMenu('subtitle-menu')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1.242 16.278a2 2 0 0 0 2 2h1.365v2.827a1 1 0 0 0 1.569.822l5.282-3.649h9.3a2 2 0 0 0 2-2V3.894a2 2 0 0 0-2-2H3.242a2 2 0 0 0-2 2zm3.563-4.195h8.287m5.992 3.039h-8.287m5.588-3.039h2.7M7.504 15.122h-2.7"/></svg>
+                </button>
+                
+                <button class="player-icon-btn" id="settings-menu-btn" title="設定">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </button>
+                
+                <button class="player-icon-btn" onclick="toggleFullscreen()" id="fullscreen-btn">
+                    <svg id="fullscreen-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2m10 0h2a2 2 0 0 1 2 2v2m0 10v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/></g></svg>
+                </button>
+                <div id="episode-menu" class="player-popup-menu hidden" style="width: 450px; max-height: 70vh;">
+                    <div id="episode-main-view">
+                        <div class="episode-menu-header" style="justify-content: flex-start; position: sticky; top: -15px; z-index: 10; background-color: #141414; margin: -15px -15px 10px -15px; padding: 15px 15px 10px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+                            <button id="season-select-btn" class="settings-back-btn" onclick="switchEpisodeView('season')" style="display: flex; align-items: center; gap: 5px; font-size: 1.1rem; padding: 0;">
+                                <span class="material-symbols-outlined">arrow_back</span>
+                                <span id="current-season-label">シーズン 1</span>
+                            </button>
+                        </div>
+                        <ul id="player-episode-list" class="scrollable-list rich-episode-list" style="margin-top: 0;"></ul>
+                    </div>
+
+                   <div id="episode-season-view" class="hidden">
+                        <div class="episode-menu-header" style="position: sticky; top: -15px; z-index: 10; background-color: #141414; margin: -15px -15px 0 -15px; padding: 15px 15px 10px 15px; border: none !important; box-shadow: none !important;">
+                            <button class="settings-back-btn" onclick="switchEpisodeView('main')">
+                                <span class="material-symbols-outlined">arrow_back</span> 戻る
+                            </button>
+                            <h4 style="margin: 0; margin-left: 10px; font-size: 1.1rem; border: none !important;">シーズンを選択</h4>
+                        </div>
+                        <style>
+    #player-season-list li:first-child { border-top: none !important; }
+</style>
+<ul id="player-season-list" class="settings-list" style="margin-top: 0; border-top: none !important; padding-top: 0;"></ul>
+                    </div>
+                </div>
+
+                <div id="audio-menu" class="player-popup-menu hidden">
+                    <h4>音声</h4>
+                    <ul id="audio-list"></ul>
+                </div>
+                
+                <div id="subtitle-menu" class="player-popup-menu subtitle-dual-pane hidden">
+                    <div class="subtitle-pane-container">
+                        <div class="subtitle-pane-left">
+                            <h4 class="pane-title">字幕</h4>
+                            <ul id="subtitle-list" class="menu-list"></ul>
+                        </div>
+                        <div class="subtitle-pane-divider"></div>
+                        <div class="subtitle-pane-right">
+                            <h4 class="pane-title">設定</h4>
+                            <div class="subtitle-custom-scroll">
+                                <div class="sub-setting-item">
+                                    <div class="sub-setting-label">
+                                        <span>字幕サイズ</span>
+                                        <span id="sub-size-display" class="val-num">100%</span>
+                                    </div>
+                                    <div class="sub-slider-wrapper">
+                                        <span class="sub-hint">小</span>
+                                        <input type="range" id="sub-size-slider" min="50" max="200" value="100">
+                                        <span class="sub-hint">大</span>
+                                    </div>
+                                </div>
+                                <div class="sub-setting-item">
+                                    <div class="sub-setting-label">
+                                        <span>字幕の位置</span>
+                                        <span id="sub-pos-display" class="val-num">10%</span>
+                                    </div>
+                                    <div class="sub-slider-wrapper">
+                                        <span class="sub-hint">下</span>
+                                        <input type="range" id="sub-pos-slider" min="0" max="90" value="10">
+                                        <span class="sub-hint">上</span>
+                                    </div>
+                                </div>
+                                <div class="sub-setting-item flex-row">
+                                    <div class="sub-setting-text">
+                                        <div class="sub-setting-label">字幕背景</div>
+                                        <div class="sub-setting-subtext">文字の視認性を高めます</div>
+                                    </div>
+                                    <label class="modern-switch">
+                                        <input type="checkbox" id="sub-bg-toggle" checked>
+                                        <span class="modern-switch-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="settings-menu" class="player-popup-menu hidden">
+                    <div id="settings-main-view">
+                        <ul class="settings-list">
+                            <li id="menu-quality-btn">画質 <span class="settings-value" id="current-quality-label">自動</span></li>
+                            <li id="menu-aspect-btn">アスペクト比 <span class="settings-value" id="current-aspect-label">標準</span></li>
+                            <li id="menu-stats-btn">再生情報（詳細）</li>
+                        </ul>
+                    </div>
+
+                    <div id="settings-quality-view" class="hidden">
+                        <div class="settings-header">
+                            <button class="settings-back-btn" onclick="switchSettingsView('main')">← 戻る</button>
+                            <span>画質</span>
+                        </div>
+                        <ul class="settings-list" id="quality-list"></ul>
+                    </div>
+
+                    <div id="settings-aspect-view" class="hidden">
+                        <div class="settings-header">
+                            <button class="settings-back-btn" onclick="switchSettingsView('main')">← 戻る</button>
+                            <span>アスペクト比</span>
+                        </div>
+                        <ul class="settings-list" id="aspect-list">
+                            <li data-aspect="default" class="active">標準</li>
+                            <li data-aspect="cover">カバー (ズーム)</li>
+                            <li data-aspect="fill">フィル (引き伸ばし)</li>
+                        </ul>
+                    </div> </div> </div> </div> </div> </div>

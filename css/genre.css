@@ -1,0 +1,30 @@
+/* ====== css/genre.css ====== */
+
+#genre-view {
+    background-color: #050505;
+    min-height: 100vh;
+    box-sizing: border-box;
+    /* ナビゲーションバーの高さ分だけ上に余白を空ける */
+    padding-top: var(--navbar-height, 70px); 
+    padding-bottom: 50px;
+}
+
+/* タイトルエリア */
+.genre-header-container {
+    padding: 30px 2.5% 20px;
+}
+
+#genre-title {
+    color: #ffffff;
+    font-size: 2.2rem;
+    font-weight: 900;
+    margin: 0;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    /* Prime Video風の文字間隔 */
+    letter-spacing: 0.05em; 
+}
+
+/* グリッド自体の左右余白を他のページと揃える */
+#genre-grid {
+    padding: 0 2.5%;
+}
