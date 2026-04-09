@@ -1,0 +1,1039 @@
+/* =====================================================
+   mobile.css - CHIDACINEMA スマホ専用スタイルシート
+   対象: 幅768px以下のスマートフォン（縦向き）
+   ※ このファイルはPC版のCSSを一切上書きしないよう、
+      すべての設定を @media (max-width: 768px) の中に格納。
+   ===================================================== */
+
+@media (max-width: 768px) {
+
+    /* =================================================
+       ■ 基本設定（スマホ全体のベース）
+       ================================================= */
+    * {
+        box-sizing: border-box !important;
+    }
+
+    html,
+    body,
+    #home-view,
+    #main-content,
+    #main-view,
+    .main-view,
+    .home-body {
+        width: 100% !important;
+        max-width: 100vw !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow-x: hidden !important;
+        position: relative !important;
+        display: block; /* !important を削除して JS で none に制御可能にする */
+    }
+
+    body {
+        /* ボトムナビ分の余白を下に確保 */
+        padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 75px) !important;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        -webkit-tap-highlight-color: transparent;
+        /* タップ時の青枠を消す */
+    }
+
+    /* =================================================
+       ■ 1. ヘッダー（2段組み：上段=ロゴ+アカウント、下段=ピル型ナビ）
+       ================================================= */
+
+    /* PC用のナビリンクを非表示 */
+    header#navbar .nav-links {
+        display: none !important;
+    }
+
+    /* ヘッダー全体：縦並びコンテナに変換 */
+    header#navbar {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        padding: calc(env(safe-area-inset-top, 0px) + 12px) 16px 14px !important;
+        gap: 0 !important;
+        /* nav-leftの内部gapで制御するためここは0 */
+        background: linear-gradient(to bottom, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.7) 60%, rgba(0, 0, 0, 0) 100%) !important;
+        box-shadow: none !important;
+        position: fixed !important;
+        /* 固定に戻す */
+        width: 100% !important;
+        height: auto !important;
+        /* コンテンツに合わせて高さを広げる */
+        min-height: initial !important;
+        z-index: 1000 !important;
+        transform: translateY(0);
+        /* 初期位置 */
+        will-change: transform;
+        /* スムーズなアニメーションのためのヒント */
+    }
+
+    header#navbar.nav-solid {
+        background: rgba(11, 11, 11, 0.97) !important;
+    }
+
+    /* nav-left：縦並びにして「ロゴ行」と「ピル型ナビ行」を分離 */
+    header#navbar .nav-left {
+        display: flex !important;
+        flex-direction: column !important;
+        /* ← これが2段化のキモ */
+        align-items: flex-start !important;
+        /* ロゴを左端へ */
+        width: 100% !important;
+        gap: 12px;
+        /* ロゴとピル型ナビの間のスペース */
+    }
+
+    /* ロゴリンク（上段の左側） */
+    header#navbar .nav-left>a {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        width: auto !important;
+        /* アカウントアイコン（右端に絶対配置）と重ならないよう右側に余白 */
+        padding-right: 44px;
+    }
+
+    /* ロゴ画像をスマホサイズに */
+    header#navbar .nav-logo {
+        height: 30px !important;
+        width: auto !important;
+    }
+
+    /* nav-right（アカウントアイコン）：上段の右端に絶対配置 */
+    header#navbar .nav-right {
+        position: absolute !important;
+        right: 16px !important;
+        top: calc(env(safe-area-inset-top, 0px) + 16px) !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        /* 通知が追加されるため、間隔を少し広げて調整 */
+    }
+
+    /* 通知アイコンを復活 */
+    header#navbar .notification-wrapper {
+        display: flex !important;
+    }
+
+    /* 検索アイコンはボトムナビにあるため、上部では非表示を維持 */
+    header#navbar .nav-right>.icon:first-child {
+        display: none !important;
+    }
+
+    /* ---- ピル型カテゴリナビ（下段・新規追加要素） ---- */
+    #mobile-pill-nav {
+        display: flex !important;
+        justify-content: flex-start !important;
+        /* 親の 16px padding に直接合わせる */
+        padding: 0 !important;
+        /* 二重パディングを解消（親の navbar に 16px あるため） */
+        box-sizing: border-box !important;
+        gap: 12px;
+        /* ボタン同士の間隔 */
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    #mobile-pill-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    #mobile-pill-nav .pill {
+        flex: 1 !important;
+        /* 均等に広げて両端のラインを揃える */
+        text-align: center !important;
+        padding: 6px 0 !important;
+        border-radius: 20px;
+        color: #fff;
+        font-size: 0.8rem;
+        /* 文字サイズをわずかに下げて「マイリスト」の窮屈さを解消 */
+        font-weight: bold;
+        white-space: nowrap;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        outline: none;
+    }
+
+    #mobile-pill-nav .pill.active {
+        background: white;
+        color: black;
+    }
+
+
+    /* =================================================
+       ■ 2. ヒーローセクション（Prime Videoスタイル：ヘッダーの真下から開始）
+       ================================================= */
+
+    /*
+       ヘッダーの合計高さの内訳（スマホ固定値）：
+        - SafeArea上部:         env(safe-area-inset-top)
+        - 上側パディング:       12px
+        - ロゴ行の高さ:         30px
+        - ロゴとピル型の隙間:   10px
+        - ピル型ナビの高さ:     ~32px
+        - 下側パディング:       14px
+       合計: safe-area-inset + 98px ≒ 変数で --mobile-header-h として定義
+    */
+    :root {
+        --mobile-header-h: calc(env(safe-area-inset-top, 0px) + 98px);
+    }
+
+    /* ヒーロー全体：ヘッダーの高さ分 ＋ 12pxの余白を空けて開始 */
+    #hero-section.hero {
+        margin-top: calc(var(--mobile-header-h) + 12px) !important;
+        margin-left: 12px !important;
+        margin-right: 12px !important;
+        width: calc(100vw - 24px) !important;
+        height: calc((100vw - 24px) * 9 / 16) !important;
+        min-height: 180px !important;
+        max-height: 280px !important;
+        overflow: hidden !important;
+        border-radius: 20px !important;
+
+        /* PC版の flex 中央揃えを完全に無効化し、中の absolute 要素を自由にする */
+        display: block; /* !important を削除して JS からの制御(none等)を許可する */
+        position: relative !important;
+    }
+
+    /* 縦長モード（設定から切り替え時）もカード型を維持 */
+    body.hero-portrait-mode #hero-section.hero {
+        height: calc((100vw - 24px) * 4 / 3) !important;
+        /* 縦長は4:3比率 */
+        max-height: 70vh !important;
+    }
+
+    /* ヒーローを明るく見せるため、PC版のグラデーションオーバーレイを削除 */
+    #hero-section .hero-overlay {
+        background: none !important;
+        display: none !important;
+    }
+
+    /* 下部の黒いフェードアウトも削除 */
+    #hero-section.hero::after {
+        display: none !important;
+        content: none !important;
+    }
+
+    /* ヒーローのoverflowリセット（背景層が正しく表示されるように） */
+    .hero-backdrop,
+    .backdrop-layer {
+        background-size: cover !important;
+        background-position: center 30% !important;
+        /* 人物の顔が見えやすい中央気味に */
+    }
+
+    /* ヒーロー内のコンテンツ（タイトル・ボタン）の配置 */
+    /* ブラウザ実機調査に基づき、コンテナを全域に広げ、下寄せ(flex-end)を強制します。
+       これによりPC版の垂直中央揃え設定を確実に上書き・排除します。 */
+    #hero-section .hero-content {
+        position: absolute !important;
+        inset: 0 !important;
+        /* ヒーローエリア全体をカバー */
+        width: 100% !important;
+        height: 100% !important;
+        /* 親全体に広げて下寄せを可能にする */
+        padding: 0 12px 20px !important;
+        /* 左隅12px、底辺から20px浮かせた位置 */
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-end !important;
+        /* 強制的に底（下）に寄せる */
+        align-items: flex-start !important;
+        /* 強制的に左（始端）に寄せる */
+        background: transparent !important;
+        transform: none !important;
+        pointer-events: none !important;
+        z-index: 50 !important;
+    }
+
+    /* ヒーローセクション内のあらすじ、バッジ、ボタン類をすべて非表示 */
+    #hero-section #hero-desc,
+    #hero-section .hero-meta,
+    #hero-section .hero-buttons {
+        display: none !important;
+    }
+
+    /* 旧ドット (#hero-dots) は非表示：PC版の設定がモバイルの親要素内でズレを引き起こすのを防ぐ */
+    #hero-dots {
+        display: none !important;
+    }
+
+    /* 最終完成形：Prime Video 風の「不動のカプセル」インジケーター（タグ本体制御版） */
+    #mobile-hero-dots {
+        display: flex; /* !important を削除して JS から制御可能にする */
+        position: relative !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: max-content !important;
+        justify-content: center !important;
+        align-items: center !important;
+
+        margin: 10px 0 17px 0 !important;
+        padding: 0 !important;
+        gap: 12px !important;
+        /* ドット同士の間隔 */
+        z-index: 10 !important;
+        box-sizing: border-box !important;
+        background: transparent !important;
+    }
+
+    /* ヒーローセクションが非表示の場合はドットも強制的に隠す (JSの制御漏れ対策) */
+    #hero-section[style*="display: none"] ~ #mobile-hero-dots {
+        display: none !important;
+    }
+
+    /* 各ドット：8px 固定。画像の中身は隠す。 */
+    #mobile-hero-dots .hero-thumb {
+        display: block !important;
+        width: 8px !important;
+        height: 8px !important;
+        border-radius: 10px !important;
+        /* 正円 */
+        background-color: #8f8f8f !important;
+        border: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        flex-shrink: 0 !important;
+        cursor: pointer !important;
+
+        /* 画像の中身を表示させない */
+        object-fit: cover !important;
+        object-position: -9999px !important;
+
+        /* アニメーション設定 */
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+            margin 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+            background-color 0.3s ease !important;
+    }
+
+    /* 活性状態：widthを広げ、増えた分をマイナスマージンで相殺することで「隣を押し出さず」にカプセル化 */
+    #mobile-hero-dots .hero-thumb.active {
+        width: 15px !important;
+        /* 20px (8px + 左右に6pxずつ拡張) */
+        margin-left: 0px !important;
+        /* 左側のはみ出し分を相殺 */
+        margin-right: 0px !important;
+        /* 右側のはみ出し分を相殺 */
+        background-color: #ffffff !important;
+        border-radius: 4px !important;
+        /* きれいなカプセル形状 */
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.4) !important;
+        z-index: 2 !important;
+        /* 重なりの優先順位を上げる */
+    }
+
+
+
+    /* タイトルの基本配置（左下） */
+    #hero-section #hero-title-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        margin-bottom: 0 !important;
+        margin-left: 0 !important;
+        transform: none !important;
+        /* 余計な移動の干渉をすべて無効化 */
+        transition: all 0.7s cubic-bezier(0.25, 1, 0.5, 1) !important;
+        transform-origin: left bottom !important;
+        pointer-events: none !important;
+    }
+
+    /* タイトルロゴ（画像）の設定 */
+    #hero-section #hero-title-container img {
+        max-width: 50vw !important;
+        object-fit: contain !important;
+        object-position: left bottom !important;
+    }
+
+    /* テキストタイトル（h1, h2）の設定 */
+    #hero-section #hero-title-container h1,
+    #hero-section #hero-title-container h2 {
+        font-size: 1.3rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 0 !important;
+        line-height: 0.8 !important;
+        /* 物理的な文字高さを超えて極限まで詰める */
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 1) !important;
+        color: #ffcc00 !important;
+    }
+
+    /* ============================================================
+       ★ 予告（トレイラー）再生中のタイトル縮小（修正済みの正確なクラス）
+       ============================================================ */
+    #hero-section .hero-content.is-trailer-playing #hero-title-container {
+        /* 再生中はひと回り小さくし、少しだけ下げて映像を主役に */
+        /* コンテナが下寄せされているため、translateY(10px) で枠内ギリギリまで下がる */
+        transform: scale(0.7) translateY(10px) !important;
+        opacity: 0.9 !important;
+    }
+
+
+
+    /* ミュートボタンは右下に小さく残す（動画再生時に使えるように） */
+    #mute-toggle {
+        top: auto !important;
+        bottom: 10px !important;
+        right: 10px !important;
+        width: 32px !important;
+        height: 32px !important;
+    }
+
+
+    #mute-toggle.mute-btn .material-symbols-outlined {
+
+        font-size: 22px;
+
+    }
+
+
+    /* =================================================
+       ■ 3. ボトムナビゲーションバー（新規追加要素）
+       ================================================= */
+    #mobile-bottom-nav {
+        display: flex !important;
+        /* PC版では display:none */
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: calc(env(safe-area-inset-bottom, 0px) + 58px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        background: rgba(12, 12, 12, 0.92);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+        z-index: 99999;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    #mobile-bottom-nav .m-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        flex: 1;
+        height: 100%;
+        color: #777;
+        text-decoration: none;
+        font-size: 0.62rem;
+        font-weight: bold;
+        cursor: pointer;
+        background: none;
+        border: none;
+        transition: color 0.2s ease;
+        padding-bottom: 4px;
+    }
+
+    #mobile-bottom-nav .m-nav-item.active {
+        color: #fff;
+    }
+
+    #mobile-bottom-nav .m-nav-item .material-symbols-outlined {
+        font-size: 1.55rem;
+        font-variation-settings: 'FILL' 0, 'wght' 300;
+    }
+
+    #mobile-bottom-nav .m-nav-item.active .material-symbols-outlined {
+        font-variation-settings: 'FILL' 1, 'wght' 400;
+    }
+
+    /* =================================================
+       ■ 4. コンテンツ行共通（PC用スライダーを上書き）
+       ================================================= */
+
+    /* PC用の左右矢印ハンドルボタンを完全に非表示 */
+    .handle {
+        display: none !important;
+    }
+
+    /* スライダーをスマホ用タッチスクロールに変換（PC版の複雑な干渉を完全に断つ） */
+    .movie-row {
+        display: flex !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        scroll-snap-type: x mandatory !important;
+        scroll-padding: 0 16px !important;
+        /* ★スナップ時の余白を強制確保 */
+        -webkit-overflow-scrolling: touch !important;
+        gap: 12px !important;
+        /* カード間の距離を統一 */
+
+        /* 横スワイプを最優先し、全体レイアウトを壊さない設定 */
+        touch-action: pan-x !important;
+        pointer-events: auto !important;
+        transform: none !important;
+        transition: none !important;
+
+        /* はみ出しを防止するためのリセット：margin ではなく padding で余白を確保 */
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 8px 16px 24px 16px !important;
+        /* 左右 16px の安全余白を確保 */
+        box-sizing: border-box !important;
+    }
+
+    /* 続けて観る、おすすめ等の特定行も ID レベルで詳細度を勝ち取る */
+    #resume-grid,
+    #popularity-grid,
+    .slider-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 8px 16px 14px 16px !important;
+        /* ID 側でもパディングを再定義して詳細度を確保 */
+        scroll-padding: 0 16px !important;
+        /* スナップ時の余白を ID レベルで強制 */
+        box-sizing: border-box !important;
+    }
+
+    #library-grid {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 8px 16px 16px 16px !important;
+        /* ID 側でもパディングを再定義して詳細度を確保 */
+        scroll-padding: 0 16px !important;
+        /* スナップ時の余白を ID レベルで強制 */
+        box-sizing: border-box !important;
+    }
+
+
+
+
+
+    /* 行タイトルの左余白も一貫性を持たせる */
+    .row-container h3 {
+        margin: 20px 0 10px 16px !important;
+        /* 35px -> 20px にタイトル上部余白を調整しつつ、左を 16px に */
+        font-size: 1.25rem !important;
+    }
+
+    /* ロー全体のラッパー（はみ出しを許さない） */
+    .slider-wrapper {
+        width: 100vw !important;
+        overflow: hidden !important;
+        clip-path: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* 擬似要素によるPC版の residual margin を消去 */
+    .movie-row::before {
+        display: none !important;
+    }
+
+    .movie-row::after {
+        content: "" !important;
+        flex: 0 0 20px !important;
+        min-width: 20px !important;
+        display: block !important;
+        margin-left: 0 !important;
+    }
+
+    /* ライブラリ行は個別調整（プラットフォームのアイコンとなるため表示の安定化） */
+    #library-grid.movie-row {
+        overflow-y: visible !important;
+        /* ライブラリカードは超出しを許可 */
+    }
+
+    /* ============================================================
+       ■ タッチスワイプの仕上げ：スクロールバーを非表示にする
+       ============================================================ */
+    /* .movie-row のスクロールバーを完全に非表示（全ブラウザ対応） */
+    .movie-row {
+        scrollbar-width: none !important;
+        /* Firefox */
+        -ms-overflow-style: none !important;
+        /* IE/Edge */
+    }
+
+    .movie-row::-webkit-scrollbar {
+        display: none !important;
+        /* Chrome/Safari/Android */
+    }
+
+
+    #popularity-grid {
+        min-height: 180px !important;
+        /* ポスター表示時の最低高さを確保（ちだおすすめ専用） */
+    }
+
+    #resume-grid::-webkit-scrollbar,
+    #library-grid::-webkit-scrollbar,
+    #popularity-grid::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    /* ホバーカードの展開を完全に無効化 */
+    .hover-panel,
+    .poster-info-panel {
+        display: none !important;
+    }
+
+    .movie-card-wrapper:hover,
+    .poster-card:hover,
+    .thumb-card:hover,
+    .resume-card:hover {
+        transform: none !important;
+        z-index: 1 !important;
+    }
+
+    /* クリップパスの上書き */
+    .slider-wrapper {
+        clip-path: none !important;
+        overflow: hidden !important;
+        /* スマホではスライダーをoverflow:hiddenに */
+        width: 100% !important;
+        pointer-events: none !important;
+        /* ラッパー自体はタップを通し、中のrowで受ける */
+    }
+
+    .slider-wrapper .movie-row,
+    .slider-wrapper #resume-grid,
+    .slider-wrapper #library-grid {
+        pointer-events: auto !important;
+        /* row本体は確実にタップ可能に */
+    }
+
+    /* =================================================
+       ■ 5. セクション別カードサイズ（本実装部分）
+       ================================================= */
+
+    /* 基準：movie-rowの左はmargin-left:12px。gap=10px。この数値でカード幅を計算する */
+
+    /* ---- 5-A. 通常映画・TV番組行（モバイルwebはサムネ16:9） ----
+       計算式：1枚フル表示 + 次のカードの35%が見える
+       left(12px) + card_W + gap(10px) + card_W × 0.35 = 100vw
+       card_W × 1.35 = 100vw - 22px
+       → card_W = (100vw - 22px) / 1.35
+    */
+    /* セレクタ詳細度を上げてPC版の !important に確実に勝つ */
+    .slider-wrapper .movie-row .poster-card,
+    .slider-wrapper .movie-row .thumb-card,
+    .content-rows .poster-card,
+    .content-rows .thumb-card,
+    .movie-row .poster-card,
+    .movie-row .thumb-card,
+    #resume-grid .poster-card,
+    #resume-grid .thumb-card,
+    #resume-grid .resume-card {
+        flex: 0 0 calc((100vw - 22px) / 1.4) !important;
+        width: calc((100vw - 22px) / 1.4) !important;
+        max-width: calc((100vw - 22px) / 1.4) !important;
+        height: auto !important;
+        aspect-ratio: 16 / 9 !important;
+        /* ← webはサムネ（横長） */
+        border-radius: 8px !important;
+        scroll-snap-align: start !important;
+        /* ← これが重要：スワイプの止まり位置 */
+        min-width: unset !important;
+        overflow: hidden !important;
+    }
+
+    .content-rows {
+    padding:  0;
+    position: relative;
+    z-index: 10;
+}
+
+    /* サムネ画像：中央でカバー表示 */
+    .movie-row .poster-card img,
+    .movie-row .thumb-card img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center center !important;
+    }
+
+    /* ---- 5-B. ライブラリ行（横長サムネイル） ----
+       計算式：3枚フル表示 + 4枚目が少しチラ見え
+       → card_W = (100vw - 22px) / 3.4
+    */
+    #library-grid {
+        gap: 10px !important;
+        /* PC版の 20px を上書き */
+    }
+
+    .library-card {
+        flex: 0 0 calc((100vw - 22px) / 2.6) !important;
+        width: calc((100vw - 22px) / 2.6) !important;
+        height: auto !important;
+        aspect-ratio: 19 / 9 !important;
+        border-radius: 20px !important;
+        scroll-snap-align: start !important;
+        min-width: unset !important;
+        max-width: unset !important;
+        overflow: hidden !important;
+    }
+
+    .library-card:hover {
+        transform: none !important;
+    }
+
+    .library-card img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center center !important;
+    }
+
+    /* ---- 5-C. 続けて観る行（1枚フル + 2枚目の60%が見える） ---- */
+    #resume-grid .resume-card,
+    .slider-wrapper #resume-grid .resume-card {
+        flex: 0 0 calc((100vw - 22px) / 1.4) !important;
+        width: calc((100vw - 22px) / 1.4) !important;
+        max-width: calc((100vw - 22px) / 1.4) !important;
+        height: auto !important;
+        aspect-ratio: 16 / 9 !important;
+        border-radius: 8px !important;
+        scroll-snap-align: start !important;
+        min-width: unset !important;
+        overflow: hidden !important;
+    }
+
+    #resume-grid .resume-card img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center center !important;
+    }
+
+    /* ---- 5-D. ちだのおすすめ行（ポスター縦長・1画面に2.1枚表示） ---- */
+    #popularity-grid .recommend-poster-card {
+        position: relative !important;
+        /* 絶対配置を解除して親要素の高さに貢献させる */
+        flex: 0 0 calc((100vw - 32px) / 2.1) !important;
+        width: calc((100vw - 32px) / 2.1) !important;
+        height: auto !important;
+        aspect-ratio: 2 / 3 !important;
+        /* ポスター形式（縦長）に合わせる */
+        border-radius: 8px !important;
+        scroll-snap-align: start !important;
+        min-width: unset !important;
+        max-width: unset !important;
+        overflow: hidden !important;
+    }
+
+    #popularity-grid .recommend-poster-card img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        /* ポスターを枠いっぱいに表示 */
+        object-position: center !important;
+    }
+
+    /* ランキング数字を右側に寄せる */
+    #popularity-grid .rank-number {
+        left: auto !important;
+        right: 15px !important;
+        /* さらに少し左（内側）に移動 */
+        bottom: 0px !important;
+        font-size: 100px !important;
+        opacity: 0.8 !important;
+    }
+
+    /* ---- 5-E. あなたにおすすめ バナー（画面ほぼ全幅） ---- */
+    .row-container.inline-promo-container {
+        padding: 0 16px !important;
+        margin: 10px 0 25px !important;
+    }
+
+    .inline-promo-wrapper {
+        aspect-ratio: 16 / 9 !important;
+        max-height: unset !important;
+        border-radius: 10px !important;
+    }
+
+    .promo-buttons {
+        display: none !important;
+    }
+
+    /* プロモーションロゴを下寄りに配置 */
+    .promo-content {
+        justify-content: flex-end !important;
+        padding-bottom: 15px !important;
+        /* 下端からの余白 */
+    }
+
+    .promo-logo {
+        margin-bottom: 5px !important;
+        /* ロゴ自体の浮きを最小限に */
+        max-width: 50vw !important;
+        /* モバイル向けにサイズも微調整 */
+    }
+
+    /* 横のグラデーションを消し、下からの影のみ残す */
+    .promo-gradient {
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 50%) !important;
+    }
+
+    /* =================================================
+       ■ 6. セクション間の余白・タイトル調整
+       ================================================= */
+    /* セクション全体の下余白を削減 (PC版 40px -> 12px) */
+    .row-container {
+        margin-bottom: 14px !important;
+    }
+
+    /* ヒーロー左マージン(12px) と統一 / 上の余白も詰める */
+    .row-container h3 {
+        margin: 10px 0 4px 16px !important;
+        font-size: 1.05rem !important;
+    }
+
+    .recommend-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin:14px 0 2px 16px;
+}
+
+
+.recommend-header h3 {
+        margin: 10px 0 4px 0px !important;
+        font-size: 1.05rem !important;
+    }
+
+    #inline-promo-container .promo-section-title {
+        margin: 10px 0 10px 0px !important;
+        font-size: 1.05rem !important;
+    }
+
+
+
+    .section-title-wrapper  {
+        margin: 10px 0 0px 0px !important;
+
+    }
+
+    .section-title-wrapper h3 {
+         margin: 0px !important;
+    }
+    .view-all-btn  {
+         padding: 0px !important;
+    }
+
+
+
+
+
+    /* =================================================
+       ■ 7. フッター（スマホでは非表示）
+       ================================================= */
+    .site-footer {
+        display: none !important;
+    }
+
+    /* =================================================
+       ■ 8. その他のUI調整
+       ================================================= */
+
+    /* 検索オーバーレイ */
+    .search-overlay {
+        padding-top: calc(env(safe-area-inset-top, 0px) + 10px) !important;
+    }
+
+    /* ローディングスピナー */
+    .loading-overlay {
+        z-index: 999999 !important;
+    }
+
+    /* アカウントドロップダウンをスマホ用フローティング型に変更 */
+    .account-dropdown.glass-effect {
+        position: fixed !important;
+        /* 親（nav-right）の制約を抜けて画面基準に */
+        right: 12px !important;
+        /* 右端から少し浮かせる */
+        left: auto !important;
+        /* 左端固定を解除 */
+        top: calc(env(safe-area-inset-top, 0px) + 58px) !important;
+        width: 60% !important;
+        /* 画面幅の約半分強に設定 */
+        min-width: 200px !important;
+        /* 文字が切れないよう最低幅を確保 */
+        border-radius: 16px !important;
+        /* 全方向を角丸にしてフローティング感を出す */
+        margin: 0 !important;
+        transform: none !important;
+        background: rgba(15, 15, 15, 0.98) !important;
+        backdrop-filter: blur(25px) !important;
+        -webkit-backdrop-filter: blur(25px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8) !important;
+        z-index: 99999 !important;
+    }
+
+    /* ---- 設定モーダル（settings-window）のモバイル最適化 ---- */
+    #global-settings-overlay {
+        background: rgba(0, 0, 0, 0.8) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+    }
+
+    .settings-window {
+        display: flex !important;
+        /* ヘッダーとコンテンツを分割 */
+        flex-direction: column !important;
+        width: 92% !important;
+        max-width: 500px !important;
+        height: auto !important;
+        max-height: 85vh !important;
+        border-radius: 20px !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .settings-header {
+        padding: 24px 20px 20px !important;
+        gap: 15px !important;
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .settings-header-text h2 {
+        font-size: 1.4rem !important;
+    }
+
+    .settings-header-text p {
+        font-size: 0.8rem !important;
+        opacity: 0.7 !important;
+    }
+
+    .settings-gear-icon {
+        font-size: 2.2rem !important;
+        width: 60px !important;
+        height: 60px !important;
+        aspect-ratio: 1 / 1 !important;
+        /* 正円を強制 */
+        flex-shrink: 0 !important;
+        /* 潰れを防止 */
+        align-self: center !important;
+        /* 縦伸びを防止 */
+        display: inline-flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+
+    .settings-content {
+        flex: 1 !important;
+        /* 残りの高さを埋める */
+        overflow-y: auto !important;
+        /* スクロールを有効化 */
+        -webkit-overflow-scrolling: touch !important;
+        /* iOS等の慣性スクロール */
+        padding: 15px 20px 30px !important;
+    }
+
+    .settings-group-title {
+        font-size: 0.95rem !important;
+        margin: 25px 0 15px !important;
+    }
+
+    .settings-item {
+        flex-direction: column !important;
+        /* 縦並びに変更 */
+        align-items: flex-start !important;
+        gap: 12px !important;
+        padding: 18px 0 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .settings-item:last-child {
+        border-bottom: none !important;
+    }
+
+    .settings-item-text {
+        width: 100% !important;
+    }
+
+    .settings-item-text h3 {
+        font-size: 1.05rem !important;
+        margin-bottom: 5px !important;
+    }
+
+    .settings-item-text p {
+        font-size: 0.82rem !important;
+        line-height: 1.4 !important;
+        opacity: 0.6 !important;
+    }
+
+    .settings-item-control {
+        width: 100% !important;
+        margin-top: 5px !important;
+        display: flex !important;
+        align-items: center !important;
+        /* 中央に揃える */
+        gap: 15px !important;
+    }
+
+    /* アバター画像の円形維持 */
+    .settings-avatar-preview {
+        width: 60px !important;
+        height: 60px !important;
+        aspect-ratio: 1 / 1 !important;
+        flex-shrink: 0 !important;
+        border-radius: 50% !important;
+        background-color: #333;
+        background-size: cover;
+        background-position: center;
+    }
+
+    /* コントロール部品をフルワイドに */
+    .settings-select,
+    .segment-group,
+    .settings-btn-primary {
+        width: 100% !important;
+        height: 50px !important;
+        /* タップしやすい高さ */
+        font-size: 0.95rem !important;
+        box-sizing: border-box !important;
+    }
+
+    .segment-group {
+        display: flex !important;
+    }
+
+    .segment-btn {
+        flex: 1 !important;
+        justify-content: center !important;
+    }
+
+    .settings-close-btn {
+        top: 15px !important;
+        right: 15px !important;
+    }
+
+    /* サブモーダル（ユーザー名変更等）も最適化 */
+    .sub-modal-window {
+        width: 90% !important;
+        max-width: 400px !important;
+        padding: 25px !important;
+        border-radius: 20px !important;
+    }
+}
+
+/* =================================================
+   ■ PC版では新規追加したモバイル専用要素を隠す
+   （ここだけはメディアクエリの外に書く必要がある）
+   ================================================= */
+#mobile-pill-nav {
+    display: none;
+}
+
+#mobile-bottom-nav {
+    display: none;
+}

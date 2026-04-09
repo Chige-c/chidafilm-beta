@@ -1,0 +1,197 @@
+/* =========================================
+   notification.css - 通知システム
+   ========================================= */
+
+/* ベルマークのラッパー（基準点） */
+.notification-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-wrapper .icon {
+    font-size: 28px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.notification-wrapper .icon:hover {
+    color: var(--gray-text);
+}
+
+/* 通知バッジ（・ または 数字） */
+.notification-badge {
+    position: absolute;
+    top: -2px;
+    right: -4px;
+    background-color: var(--flixer-red);
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    min-width: 8px; /* 「・」の時は丸く小さくするため */
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+/* ドロップダウンメニュー（深層すりガラス） */
+.notification-menu {
+    position: absolute;
+    top: 45px;
+    right: -10px;
+    width: 320px;
+    max-height: 400px;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), visibility 0.3s;
+    z-index: 1000;
+}
+
+/* メニューを開いたときのクラス */
+.notification-menu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* メニューのヘッダー */
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.notification-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.mark-read {
+    font-size: 0.8rem;
+    color: var(--gray-text);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.mark-read:hover {
+    color: white;
+}
+
+/* 通知リスト本体 */
+.notification-list {
+    overflow-y: auto;
+    padding: 10px 0;
+    scrollbar-width: none; /* Firefox */
+}
+.notification-list::-webkit-scrollbar {
+    display: none; /* Chrome */
+}
+
+/* ===== トースト通知（画面上部） ===== */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+    gap: 10px;
+}
+
+.toast-message {
+    font-family: 'Noto Sans JP', sans-serif;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    animation: toast-slide-in 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards,
+               toast-fade-out 0.3s ease-in forwards;
+    animation-delay: 0s, var(--toast-duration, 3s);
+}
+
+@keyframes toast-slide-in {
+    0% { opacity: 0; transform: translateY(-20px) scale(0.95); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes toast-fade-out {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-10px) scale(0.95); }
+}
+
+/* home-layout.css または適切なCSSファイルに追加 */
+.notification-item.is-clickable {
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.notification-item.is-clickable:hover {
+    background: rgba(255, 255, 255, 0.1); /* ホバー時に少し明るくする */
+}
+
+.notification-item.is-clickable:active {
+    background: rgba(255, 255, 255, 0.2); /* クリックした瞬間にさらに明るく */
+}
+
+.notification-item {
+    display: flex;
+    flex-direction: column; /* 縦並びに変更 */
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15); /* 作品同士の区切り線 */
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notif-thumb-container {
+    width: 100%;
+    order: 2; /* タイトルの後に配置 */
+    position: relative;
+}
+
+.notif-thumb {
+    width: 100%;
+    height: 140px; /* Netflix風の横長サイズ */
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* タイトルエリアの調整 */
+.notif-content {
+    order: 1; /* タイトルを上に配置 */
+    width: 100%;
+}
+
+.notif-title {
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    line-height: 1.4;
+}

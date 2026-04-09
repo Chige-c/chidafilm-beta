@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHIDACINEMA - ホーム</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/home-layout.css">
+    <link rel="stylesheet" href="css/account-menu.css?v=6">
+    <link rel="stylesheet" href="css/settings.css?v=1">
+    <link rel="stylesheet" href="css/notification.css">
+    <link rel="stylesheet" href="css/poster-layout.css">
+    <link rel="stylesheet" href="css/hero.css">
+    <link rel="stylesheet" href="css/recommend.css">
+    <link rel="stylesheet" href="css/recommend-s.css">
+    <link rel="stylesheet" href="css/recommend-scroll.css">
+    <link rel="stylesheet" href="css/hover-card.css">
+    <link rel="stylesheet" href="css/search.css">
+    <link rel="stylesheet" href="css/platform-gallery.css">
+    <link rel="stylesheet" href="css/mylist.css">
+    <link rel="stylesheet" href="css/details.css">
+    <link rel="stylesheet" href="css/genre.css">
+    <link rel="stylesheet" href="css/player.css">
+    <!-- スマホ専用スタイル（PCは一切影響なし） -->
+    <link rel="stylesheet" href="css/mobile.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body class="home-body">
+
+    <div id="loading-overlay" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>読み込み中...</p>
+    </div>
+
+    <header id="navbar" class="nav-transparent">
+        <div class="nav-left">
+    <a href="./" onclick="event.preventDefault(); goToHome();" style="display: flex; align-items: center; text-decoration: none;">
+    <img src="assets/logo.png" alt="Logo" class="nav-logo">
+</a>
+    <ul class="nav-links">
+    <li><a href="#" id="nav-home" class="active">ホーム</a></li>
+    <li><a href="#" id="nav-movies">映画</a></li>
+    <li><a href="#" id="nav-shows">シリーズ</a></li>
+    <li><a href="#" id="nav-mylist">マイリスト</a></li>
+    </ul>
+    <!-- スマホ専用ピル型カテゴリナビ（PCでは非表示） -->
+    <div id="mobile-pill-nav">
+        <button class="pill active" onclick="mobileNavPill(this, 'home')">ホーム</button>
+        <button class="pill" onclick="mobileNavPill(this, 'movies')">映画</button>
+        <button class="pill" onclick="mobileNavPill(this, 'shows')">TV番組</button>
+        <button class="pill" onclick="mobileNavPill(this, 'mylist')">マイリスト</button>
+    </div>
+        </div>
+        <div class="nav-right">
+            <span class="material-symbols-outlined icon" onclick="openSearch()">search</span>
+            
+            <div class="notification-wrapper" id="notification-wrapper">
+                <span class="material-symbols-outlined icon" id="notification-bell">notifications</span>
+                <span class="notification-badge" id="notification-badge" style="display: none;"></span>
+
+                <div class="notification-menu glass-effect" id="notification-menu">
+                    <div class="notification-header">
+                        <h3>通知</h3>
+                        <span class="mark-read" id="mark-all-read">すべて既読にする</span>
+                    </div>
+                    <div class="notification-list" id="notification-list">
+                        </div>
+                </div>
+            </div>
+            <div class="user-profile dropdown-container">
+                <div class="profile-icon-wrapper" id="header-profile-wrapper">
+                    <span class="material-symbols-outlined profile-icon-fallback" id="header-profile-fallback">person</span>
+                </div>
+                <div class="account-dropdown glass-effect">
+                    <div class="dropdown-header">
+                        <div class="dropdown-profile-icon-wrapper" id="dropdown-profile-wrapper">
+                            <span class="material-symbols-outlined dropdown-profile-fallback" id="dropdown-profile-fallback">person</span>
+                        </div>
+                        <div class="dropdown-user-info">
+                            <span class="dropdown-username">User</span>
+                            <span class="dropdown-subtext">プロフィールを管理</span>
+                        </div>
+                    </div>
+                    <ul class="dropdown-menu-list">
+                        <li><a href="#" onclick="event.preventDefault(); openSettingsModal();"><span class="material-symbols-outlined">settings</span>アカウントと設定</a></li>
+                        <li><a href="#"><span class="material-symbols-outlined">help</span>ヘルプ</a></li>
+                        <li class="dropdown-divider"></li>
+                        <li><a href="#" onclick="event.preventDefault(); handleLogout();"><span class="material-symbols-outlined">logout</span>ログアウト</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    
+
+    <div id="hero-section" class="hero">
+        <div id="hero-backdrop" class="hero-backdrop">
+            <div id="backdrop-1" class="backdrop-layer active"></div>
+            <div id="backdrop-2" class="backdrop-layer"></div>
+        </div>
+        
+        <div id="trailer-container"></div>
+
+        <button id="mute-toggle" class="mute-btn">
+            <span class="material-symbols-outlined">volume_off</span>
+        </button>
+
+        <div class="hero-overlay"></div>
+
+        <div class="hero-content">
+            <div id="hero-title-container"></div>
+            <div class="hero-meta">
+                <span id="hero-year"></span>
+                <span id="hero-type" class="badge"></span>
+            </div>
+            <p id="hero-desc"></p>
+            <div class="hero-buttons">
+                <button class="btn-play" onclick="playHero()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" style="margin-right: 4px;"><path fill="currentColor" d="M8 17.175V6.825q0-.425.3-.713t.7-.287q.125 0 .263.037t.262.113l8.15 5.175q.225.15.338.375t.112.475t-.112.475t-.338.375l-8.15 5.175q-.125.075-.262.113T9 18.175q-.4 0-.7-.288t-.3-.712"/></svg>
+                    今すぐ観る
+                </button>
+                <button class="btn-info" onclick="infoHero()">
+                    <span class="material-symbols-outlined">info</span>
+                </button>
+            </div>
+        </div>
+        
+        <div id="hero-dots" class="hero-dots"></div>
+    </div>
+    <!-- モバイル専用ヒーロードット：親コンテナのズレの影響を受けないよう画面直下に新設 -->
+    <div id="mobile-hero-dots" class="hero-dots mobile-only"></div>
+
+    <div id="home-view"> <section class="content-rows">
+
+
+        <div class="row-container">
+         <div class="slider-wrapper">
+            <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            
+            <div id="library-grid" class="movie-row"></div>
+            
+            <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="resume-section" class="row-container" style="display: none;">
+            <h3>続けて観る</h3>
+            <div class="slider-wrapper">
+                <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="resume-grid" class="movie-row"></div>
+                <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+        </div>
+
+            <div class="row-container">
+            <h3>最近追加された映画</h3>
+            <div class="slider-wrapper">
+                <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="movie-grid" class="movie-row"></div>
+                <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="row-container">
+            <h3>最近追加されたTV番組</h3>
+            <div class="slider-wrapper">
+                <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="series-grid" class="movie-row"></div>
+                <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+        </div>
+
+
+        <div class="row-container">
+            <h3>最新エピソード</h3>
+            <div class="slider-wrapper">
+                <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="latest-episodes-grid" class="movie-row"></div>
+                <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+        </div>
+
+            <div class="row-container">
+            <h3>最近公開された映画</h3>
+            <div class="slider-wrapper">
+                <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="recent-releases-grid" class="movie-row"></div>
+                <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="row-container">
+            <div class="recommend-header">
+                <h3>ちだのおすすめ</h3>
+                <span id="admin-settings-icon" class="material-symbols-outlined admin-gear-icon" onclick="toggleAdminPanel()">settings</span>
+            </div>
+            
+            <div class="slider-wrapper">
+                <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="popularity-grid" class="movie-row"></div>
+                <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="row-container">
+            <h3>名作・受賞作品</h3>
+            <div class="slider-wrapper">
+                <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="suggested-grid" class="movie-row"></div>
+                <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="row-container inline-promo-container" id="inline-promo-container" style="display: none;">
+    <h3 class="promo-section-title">あなたにおすすめ</h3>
+    <div class="inline-promo-wrapper" id="promo-wrapper">
+        <div class="promo-bg">
+            <img src="" alt="Background" id="promo-bg-img">
+            <div class="promo-gradient"></div>
+        </div>
+        <div class="promo-content">
+            <img id="promo-logo" class="promo-logo" src="" alt="Logo" style="display: none;">
+            <h2 class="promo-title" id="promo-title" style="display: none;"></h2>
+            
+            <div class="promo-buttons">
+                <button class="promo-btn play-btn" id="promo-play-btn">
+                    <span class="material-symbols-outlined">play_arrow</span> 再生
+                </button>
+                <button class="promo-btn info-btn" id="promo-info-btn">
+                    <span class="material-symbols-outlined">info</span> 詳細
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <div class="row-container">
+            <h3>アクション</h3>
+            <div class="slider-wrapper">
+                <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="genre-action" class="movie-row"></div>
+                <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="row-container">
+            <h3>アドベンチャー</h3>
+            <div class="slider-wrapper">
+                <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="genre-adventure" class="movie-row"></div>
+                <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+        </div>
+
+        
+        <div class="row-container">
+        <h3>アニメーション</h3>
+        <div class="slider-wrapper">
+            <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <div id="genre-animation" class="movie-row"></div>
+            <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="row-container">
+        <h3>ドラマ</h3>
+        <div class="slider-wrapper">
+            <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <div id="genre-drama" class="movie-row"></div>
+            <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="row-container">
+        <h3>ファンタジー</h3>
+        <div class="slider-wrapper">
+            <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <div id="genre-fantasy" class="movie-row"></div>
+            <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="row-container">
+        <h3>コメディ</h3>
+        <div class="slider-wrapper">
+            <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            <div id="genre-comedy" class="movie-row"></div>
+            <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+        </div>
+    </div>
+    <div class="row-container">
+    <h3 class="row-title">SF・Sci-Fi</h3>
+    <div class="slider-wrapper">
+        <button class="handle handle-left" onclick="scrollRow(this, -1)">
+            <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        <div class="movie-row" id="genre-sf"></div> <button class="handle handle-right" onclick="scrollRow(this, 1)">
+            <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+    </div>
+</div>
+
+
+
+
+    </section>
+    </div> <div id="details-view" class="view-container" style="display: none;">
+        <div id="details-content"></div> 
+    </div>
+
+    <div id="genre-view" class="view-section" style="display: none;">
+    <div class="genre-header-container">
+        <h1 id="genre-title">ジャンル名</h1>
+    </div>
+    <div id="genre-grid" class="vod-grid"></div>
+</div>
+
+    <div id="gallery-view" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0a0a0a; z-index: 9999; overflow-y: auto;">
+    <div class="gallery-header" style="padding: 40px 2.5% 20px 2.5%; position: sticky; top: 0; background: linear-gradient(to bottom, #000000, rgba(10,10,10,0)); z-index: 10;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%; padding-bottom: 15px;">
+            <h1 id="gallery-title" style="color:white; font-size:3.5rem; margin:0; font-weight: 900; text-transform: uppercase; letter-spacing: -1px; line-height: 0.8;">LIBRARY</h1>
+            <div class="gallery-sort-container" style="margin: 0;">
+                <span class="sort-label">並び替え</span>
+                <div class="modern-select-wrapper">
+                    <select id="sort-selector" onchange="changeSortOrder()">
+                        <option value="DateCreated&SortOrder=Descending">追加日順 (新着)</option>
+                        <option value="DateCreated&SortOrder=Ascending">追加日順 (古い順)</option>
+                        <option value="SortName&SortOrder=Ascending">名前順 (A-Z)</option>
+                        <option value="CommunityRating&SortOrder=Descending">人気順 (評価順)</option>
+                        <option value="PremiereDate&SortOrder=Descending">公開日順</option>
+                    </select>
+                    <span class="material-symbols-outlined dropdown-icon">expand_more</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="gallery-grid" class="gallery-grid" style="padding: 0 2.5% 50px 2.5%;"></div>
+
+
+</div> <div id="mylist-view" style="display: none; padding: 100px 4% 50px;">
+    <div class="mylist-header" style="margin-bottom: 20px;">
+        <h2 style="color: white; font-size: 2rem; margin-bottom: 15px;">マイリスト</h2>
+        <div class="mylist-filters">
+            <button class="mylist-filter-btn active" data-filter="All">すべて</button>
+            <button class="mylist-filter-btn" data-filter="Movie">映画</button>
+            <button class="mylist-filter-btn" data-filter="Series">番組</button>
+            <button class="mylist-filter-btn" data-filter="Episode">エピソード</button>
+        </div>
+    </div>
+    
+    <!-- ★新規：「すべて」用スライダーコンテナ -->
+    <div id="mylist-all-container" style="display: none; padding-bottom: 50px;">
+        <!-- 映画スライダー -->
+        <div id="mylist-movies-section" class="row-container" style="display: none;">
+            <div class="section-title-wrapper">
+                <h3>映画</h3>
+                <button class="view-all-btn" onclick="switchMylistTab('Movie')">
+                    すべて見る
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+            <div class="slider-wrapper">
+                <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="mylist-movies-grid" class="movie-row"></div>
+                <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+        </div>
+        <!-- 番組スライダー -->
+        <div id="mylist-series-section" class="row-container" style="display: none;">
+            <div class="section-title-wrapper">
+                <h3>番組</h3>
+                <button class="view-all-btn" onclick="switchMylistTab('Series')">
+                    すべて見る
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+            <div class="slider-wrapper">
+                <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="mylist-series-grid" class="movie-row"></div>
+                <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+        </div>
+        <!-- エピソードスライダー -->
+        <div id="mylist-episodes-section" class="row-container" style="display: none;">
+            <div class="section-title-wrapper">
+                <h3>エピソード</h3>
+                <button class="view-all-btn" onclick="switchMylistTab('Episode')">
+                    すべて見る
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+            <div class="slider-wrapper">
+                <button class="handle handle-left" onclick="scrollRow(this, -1)">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div id="mylist-episodes-grid" class="movie-row"></div>
+                <button class="handle handle-right" onclick="scrollRow(this, 1)">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 従来の「個別タブ」用グリッド -->
+    <div id="mylist-grid" class="vod-grid"></div>
+    
+    <div id="mylist-empty" style="display: none; text-align: center; color: #aaa; margin-top: 100px;">
+        <span class="material-symbols-outlined" style="font-size: 4rem;">favorite_border</span>
+        <p style="margin-top: 15px; font-size: 1.2rem;">お気に入りに登録された作品がありません。</p>
+    </div>
+</div>
+    <footer class="site-footer">
+    <div class="footer-content">
+        <button id="back-to-top" class="back-to-top-btn">
+            <span class="material-symbols-outlined">expand_less</span> トップへ戻る
+        </button>
+        
+        <ul class="footer-links">
+            <li><a href="#" onclick="document.getElementById('nav-home').click(); return false;">ホーム</a></li>
+            <li><a href="#" onclick="document.getElementById('nav-mylist').click(); return false;">マイリスト</a></li>
+            <li><a href="#" onclick="if(typeof openSettingsModal==='function')openSettingsModal(true); return false;">アカウント設定</a></li>
+            <li><a href="#">ヘルプセンター</a></li>
+            <li><a href="#">利用規約</a></li>
+        </ul>
+        
+        <p class="footer-copy">&copy; 2026 ChidaFilm. All Rights Reserved.</p>
+    </div>
+</footer>
+
+
+
+
+    <div id="admin-screen" class="admin-overlay">
+        <div class="admin-content">
+            <span class="close-btn" onclick="toggleAdminPanel()">&times;</span>
+            <h2>ちだのおすすめ管理</h2>
+            
+            <div class="admin-search-box">
+                <input type="text" id="admin-search-input" placeholder="作品名で検索して追加..." oninput="searchItemsForAdmin()">
+                <div id="admin-search-results" class="admin-search-results"></div>
+            </div>
+
+            <p style="margin-top:20px; font-weight:bold;">現在のリスト（ドラッグやボタンで操作）</p>
+            <div id="admin-current-list" class="admin-edit-grid"></div>
+            
+            <input type="hidden" id="custom-ids-input">
+        </div>
+    </div>
+
+
+
+    <div id="search-overlay" class="search-overlay">
+        <div class="search-header">
+            <span class="material-symbols-outlined search-icon-large">search</span>
+            <input type="text" id="search-input" placeholder="映画、TV番組を検索..." autocomplete="off">
+            <span class="material-symbols-outlined close-search" onclick="closeSearch()">close</span>
+        </div>
+        <div class="search-results-container">
+            <div id="search-meta" class="search-meta"></div>
+            <div id="search-grid" class="search-grid"></div>
+        </div>
+    </div>
+</div> <div id="player-root"></div> <script src="js/jellyfin.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/home.js"></script>
+    <script src="js/notification.js"></script>
+    <script src="js/mylist.js"></script>
+    <script src="js/view-toggle.js"></script>
+    <script src="js/handle.js"></script>
+    <script src="js/recommend.js"></script>
+    <script src="js/recommend-s.js"></script>
+    <script src="js/recommend-scroll.js"></script>
+    <script src="js/mylist.js?v=4"></script>
+    <script src="js/account-menu.js?v=3"></script>
+    <script src="js/settings.js?v=1"></script>
+    <script src="js/hover-card.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/platform-gallery.js"></script>
+    <script src="js/details.js"></script>
+    <script src="js/genre.js"></script>
+    <script src="js/player.js"></script>
+
+    <!-- スマホ専用ボトムナビゲーションバー（PCでは非表示） -->
+    <nav id="mobile-bottom-nav" aria-label="モバイルナビゲーション">
+        <button class="m-nav-item active" id="m-nav-home" onclick="mobileBottomNav(this, 'home')">
+            <span class="material-symbols-outlined">home</span>
+            <span>ホーム</span>
+        </button>
+        <button class="m-nav-item" id="m-nav-search" onclick="openSearch(); mobileBottomNav(this, 'search')">
+            <span class="material-symbols-outlined">search</span>
+            <span>検索</span>
+        </button>
+        <button class="m-nav-item" id="m-nav-mylist" onclick="mobileBottomNav(this, 'mylist')">
+            <span class="material-symbols-outlined">favorite</span>
+            <span>マイリスト</span>
+        </button>
+        <button class="m-nav-item" id="m-nav-media" onclick="mobileBottomNav(this, 'media')">
+            <span class="material-symbols-outlined">video_library</span>
+            <span>マイメディア</span>
+        </button>
+    </nav>
+
+    <script>
+        /* =====================================================
+           スマホ専用の軽量コントローラー
+           ===================================================== */
+
+        // ボトムナビのアクティブ切り替え
+        function mobileBottomNav(el, section) {
+            document.querySelectorAll('#mobile-bottom-nav .m-nav-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+            // 対応するメインナビのクリックと連携
+            const map = { home: 'nav-home', mylist: 'nav-mylist', media: null, search: null };
+            if (map[section]) {
+                const target = document.getElementById(map[section]);
+                if (target) target.click();
+            }
+            // マイメディアはplatform-galleryを直接開く
+            if (section === 'media') {
+                if (typeof openPlatformGallery === 'function') openPlatformGallery();
+            }
+        }
+
+        // ピル型ナビのアクティブ切り替え＋カテゴリフィルタ
+        function mobileNavPill(el, category) {
+            document.querySelectorAll('#mobile-pill-nav .pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            // 既存のナビリンクと連携して映画・TV番組を切り替え
+            const map = { home: 'nav-home', movies: 'nav-movies', shows: 'nav-shows', mylist: 'nav-mylist' };
+            if (map[category]) {
+                const target = document.getElementById(map[category]);
+                if (target) target.click();
+            }
+        }
+
+        // ヒーローセクションのスタイル（縦長/横長）の読み込みと適用
+        (function applyMobileHeroStyle() {
+            const heroStyle = localStorage.getItem('mobileHeroStyle') || 'landscape';
+            if (heroStyle === 'portrait') {
+                document.body.classList.add('hero-portrait-mode');
+            }
+        })();
+
+        // ============================================================
+        // ヒーローのスワイプ/タップ・スライダーの横スワイプは
+        // js/mobile.js で管理（DOMContentLoaded 後に自動起動）
+        // ============================================================
+    </script>
+    <!-- スマホ専用コントローラー（スワイプ・スライダー操作） -->
+    <script src="js/mobile.js"></script>
+</body>
+</html>

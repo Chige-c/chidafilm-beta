@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  jellyfin-spa:
+    image: nginx:alpine
+    container_name: jellyfin-spa
+    ports:
+      - "8080:80"  # 左側の8080はお好みのポートに変更可能です (例: 8080:80, 9000:80 など)
+    volumes:
+      - /DATA/AppData/chidaflim-v1.0:/usr/share/nginx/html:ro
+      - /DATA/AppData/chidaflim-v1.0/default.conf:/etc/nginx/conf.d/default.conf:ro
+    restart: unless-stopped

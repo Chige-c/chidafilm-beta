@@ -1,0 +1,552 @@
+/* =========================================
+   hover-card.css - Prime Video風
+   (枠外への表示許可・詳細パネル追加)
+   ========================================= */
+
+/* --- 1. ラッパー（外箱） --- */
+.movie-card-wrapper {
+    position: relative;
+    z-index: 10;
+    border-radius: 15px;
+    flex: 0 0 auto;
+    display: block;
+    overflow: visible !important;
+
+    /* ★最重要：変形の起点(origin)を事前に確定させ、ガタつきを物理的に排除 */
+    --x-origin: 50%;
+    --y-origin: 50%;
+    transform-origin: var(--x-origin) var(--y-origin);
+
+    /* 起点(origin)自体にはアニメーションを掛けない */
+    transition:
+        transform 0.2s ease-out,
+        box-shadow 0.2s ease-out !important;
+
+    z-index: 10;
+
+    /* ★ボケ防止：親にはGPUロック(will-change等)を掛けず、flatレンダリングを維持する */
+    transform-style: flat !important;
+    -webkit-font-smoothing: antialiased !important;
+}
+
+/* 縮小中の階層管理（ホバー中よりは下、通常よりは上） */
+.movie-card-wrapper.is-shrinking {
+    z-index: 10000 !important;
+}
+
+/* ホバー時の拡大 (JSで .is-hovered が付与された時に発動) */
+.movie-card-wrapper.is-hovered {
+    transform: scale(1.3) !important;
+    z-index: 10001 !important;
+    /* 最前面 */
+
+    /* 以前の成功パターンに戻す */
+    transition:
+        transform 0.5s cubic-bezier(0.33, 1, 0.68, 1),
+        z-index 0s linear,
+        box-shadow 0.5s ease-out !important;
+
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
+    background-color: #181818 !important;
+}
+
+/* --- 2. 中身のリセット --- */
+.movie-card-wrapper>div[class*="-card"] {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    display: block !important;
+    position: relative !important;
+    z-index: 2 !important;
+    background: #181818;
+    border-radius: 15px;
+    overflow: visible !important;
+}
+
+/* Jellyfinが持つ隠しアニメーション（画像の勝手なズームや変形・ピクつき要因）を完全に封印 */
+.movie-card-wrapper>div[class*="-card"] * {
+    transition: none !important;
+    transform: none !important;
+}
+
+.movie-card-wrapper>div[class*="-card"] img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+
+    /* ▼ 小数点（サブピクセル）X座標によるブラウザの描画ジャンプバグを強制突破 ▼ */
+    transform: translateZ(0) !important;
+    backface-visibility: hidden !important;
+    will-change: transform !important;
+    transition: none !important;
+}
+
+/* --- 3. 詳細パネル --- */
+.hover-details-panel {
+    background-color: #181818 !important;
+    position: absolute;
+    top: 100%;
+    margin-top: -15px;
+    left: 0 !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    z-index: 1 !important;
+    justify-content: flex-start;
+    pointer-events: auto !important;
+    background: rgba(24, 24, 24, 0.95) !important;
+    border-radius: 15px !important;
+    padding: 15px 1px 1px 1px;
+    color: #fff;
+    opacity: 0;
+    visibility: hidden;
+
+    /* 文字をくっきりさせるための設定（過去の成功例） */
+    -webkit-font-smoothing: antialiased !important;
+    text-rendering: optimizeLegibility !important;
+}
+
+.hover-details-panel * {
+    background-color: transparent !important;
+    /* ボタン以外は透明 */
+}
+
+.hover-details-inner {
+    padding: 15px !important;
+}
+
+@keyframes detailFadeIn {
+    0% {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    100% {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+.movie-card-wrapper:hover .hover-details-panel {
+    pointer-events: auto !important;
+    /* カードの拡大(0.4s)に合わせてディレイなしで即座にフェードインを開始 */
+    animation: detailFadeIn 0.5s ease 0s forwards !important;
+}
+
+/* --- 4. デザイン部品 --- */
+.resume-title,
+.poster-card-title,
+.cardText {
+    display: none !important;
+    /* 不安定な既存タイトルの完全非表示 */
+}
+
+.hover-title {
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    margin-bottom: 15px !important;
+    line-height: 1.2;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    /* 影（ハロー効果）を抑えて輪郭をシャープに */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9) !important;
+    letter-spacing: -0.2px !important;
+}
+
+.hover-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px !important;
+    /* 重複を統合 */
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.star-rating {
+    display: flex !important;
+    align-items: center !important;
+    color: #fbc02d !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+}
+
+.star-rating .star-icon {
+    font-size: 16px !important;
+    margin-right: 4px !important;
+}
+
+.age-rating {
+    border: 1px solid #888;
+    padding: 0 4px;
+    font-size: 11px;
+}
+
+.hover-genres-text {
+    color: #dfdfdf !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    margin-bottom: 8px;
+}
+
+.hover-overview-text {
+    font-family: Arial, "Noto Sans JP", sans-serif !important;
+    text-align: left !important;
+    word-break: break-all !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    line-height: 1.4 !important;
+    color: #ebebeb !important;
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 3 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin-top: 4px !important;
+    margin-bottom: 0 !important;
+}
+
+/* --- 5. アクションボタン周り --- */
+.hover-actions,
+.hover-actions button,
+.hover-details-content a {
+    pointer-events: auto !important;
+}
+
+.hover-actions {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px;
+    margin-bottom: 18px !important;
+    opacity: 0;
+    transform: translateY(0px);
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.movie-card-wrapper:hover .hover-actions {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    /* パネルと同時に表示されるようディレイを削除 */
+    transition-delay: 0s !important;
+}
+
+.other-actions {
+    display: flex !important;
+    gap: 8px !important;
+}
+
+.hover-icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background-color: rgba(42, 42, 42, 0.8) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.hover-icon-btn:hover {
+    border-color: white !important;
+    background-color: white !important;
+    color: black;
+}
+
+.hover-icon-btn.play {
+    flex: 1 !important;
+    height: 40px !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 0 15px !important;
+    transition: transform 0.2s ease, background-color 0.2s ease !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+.hover-icon-btn.play:hover {
+    background-color: #e0e0e0 !important;
+    color: #000000 !important;
+    transform: scale(1.02) !important;
+}
+
+.play-text {
+    font-size: 14px !important;
+    font-weight: 900 !important;
+    color: #000000 !important;
+    white-space: nowrap !important;
+}
+
+.hover-icon-btn.play .material-symbols-outlined,
+.hover-icon-btn.play .play-icon {
+    font-size: 22px !important;
+    color: #000000 !important;
+}
+
+.hover-icon-btn.play .play-icon {
+    margin-right: 8px !important;
+}
+
+.hover-icon-btn:not(.play) {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    color: white !important;
+}
+
+.hover-icon-btn:not(.play):hover {
+    background-color: rgba(70, 70, 70, 0.8) !important;
+}
+
+/* --- 6. 予告動画エリア --- */
+.hover-video-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: none;
+    border-radius: 15px 15px 0 0;
+    overflow: hidden;
+    z-index: 100000 !important;
+    /* 重複部分を統合 */
+}
+
+.hover-video-wrapper iframe {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.hover-mute-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100001 !important;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.hover-mute-btn:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+    border-color: white;
+    transform: scale(1.1);
+}
+
+.hover-mute-btn span.material-symbols-outlined {
+    font-size: 18px !important;
+}
+
+/* --- 7. マイメディアの特殊処理 --- */
+.movie-card-wrapper:has(.library-card) .hover-detail-panel,
+.movie-card-wrapper:has(.library-card) .hover-video-container {
+    display: none !important;
+    opacity: 0 !important;
+}
+
+/* =========================================
+   ポスターモード専用：全セクション対応・究極シンクロ版
+========================================= */
+
+.poster-info-panel {
+    display: none !important;
+}
+
+body.poster-mode .resume-title,
+body.poster-mode .hover-details-panel,
+body.poster-mode .cardText {
+    display: none !important;
+}
+
+body.poster-mode .movie-card-wrapper .poster-card,
+body.poster-mode .movie-card-wrapper .thumb-card,
+body.poster-mode .movie-card-wrapper .resume-card,
+body.poster-mode .movie-card-wrapper .library-card {
+    position: relative;
+    overflow: visible !important;
+    background: #181818;
+    border-radius: 15px;
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease !important;
+}
+
+body.poster-mode .movie-card-wrapper img {
+    position: relative !important;
+    z-index: 2 !important;
+    width: 100%;
+    height: 100%;
+    object-fit: cover !important;
+    display: block;
+    border-radius: 15px !important;
+    image-rendering: -webkit-optimize-contrast;
+    transform: translateZ(0);
+}
+
+body.poster-mode .poster-info-panel {
+    display: block !important;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #181818;
+    margin-top: -25px;
+    border-radius: 15px !important;
+    padding: 37px 10px 12px 10px;
+    box-sizing: border-box;
+    text-align: center;
+    opacity: 0 !important;
+    transition: opacity 0.3s ease !important;
+    pointer-events: auto !important;
+    z-index: 1 !important;
+}
+
+body.poster-mode .movie-card-wrapper:hover {
+    transform: scale(1.05) translateZ(0) !important;
+    z-index: 10001 !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8) !important;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        z-index 0s !important;
+}
+
+body.poster-mode .movie-card-wrapper:hover .poster-card,
+body.poster-mode .movie-card-wrapper:hover .thumb-card,
+body.poster-mode .movie-card-wrapper:hover .resume-card,
+body.poster-mode .movie-card-wrapper:hover .library-card {
+    transform: scale(1.05) translateZ(0) !important;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8) !important;
+    transition: transform 0.3s ease, box-shadow 0.4s ease 0.3s !important;
+}
+
+body.poster-mode .movie-card-wrapper:hover .poster-info-panel {
+    opacity: 1 !important;
+    z-index: 1 !important;
+    transition-delay: 0s !important;
+}
+
+body.poster-mode .poster-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.poster-mode .poster-year {
+    font-size: 12px;
+    color: #aaaaaa;
+    margin-top: 4px;
+}
+
+body.poster-mode .movie-card-wrapper {
+    position: relative;
+    z-index: 10;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        z-index 0s !important;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0) !important;
+}
+
+/* =========================================
+   端の作品の拡大方向を制御（2.5%余白を死守）
+   ========================================= */
+
+
+
+/* =========================================
+   ホーム画面：右端ピッタリ＆ハンドル被りの修正
+   ========================================= */
+
+/* 1. Flexboxが右側のpaddingを無視するバグの修正（強制的に2.5%の空間（壁）を作る） */
+.emby-scroller::after,
+.movie-row::after {
+    content: "";
+    display: block;
+    flex: 0 0 var(--side-padding, 2.5%) !important;
+    width: var(--side-padding, 2.5%) !important;
+}
+
+/* 2. ホーム画面の左右端にいる作品の「拡大方向」を内側に強制する */
+/* PC標準（6列）の場合：1番目、6番目、12番目...などを端として認識させる */
+
+/* 3. 【神UI化】作品にホバーしている間は、邪魔なハンドルをスッと隠す */
+.slider-wrapper:hover .handle,
+.row-container:hover .handle,
+.emby-scroller:hover~.handle {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.2s ease !important;
+}
+
+
+/* 左端：JSのIntersectionObserverによって付与される */
+.movie-card-wrapper.is-at-left {
+    --x-origin: 0% !important;
+}
+
+/* 右端：JSのIntersectionObserverによって付与される */
+.movie-card-wrapper.is-at-right {
+    --x-origin: 100% !important;
+}
+
+/* 以前の古いクラス名も互換性のために維持（もし他で使っていれば） */
+.movie-card-wrapper.is-at-left, 
+.movie-card-wrapper.is-at-right,
+.movie-card-wrapper {
+    /* Originの変更自体にアニメーションが割り込むのを防ぐ */
+    transition-property: transform, box-shadow, opacity, background-color !important;
+}
+
+.hover-icon-btn.is-favorite {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.8) !important;
+    color: #ffffff !important;
+}
+
+.hover-icon-btn.is-favorite:hover {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+.movie-card-wrapper:hover,
+.hover-details-panel {
+    /* フォントの輪郭を常に滑らかに保つ */
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+
+    /* Chrome等に「これ以上は画像として引き伸ばすな」と強制する */
+    transform-style: flat !important;
+    filter: blur(0px) !important;
+}
+
+.hover-details-panel * {
+    /* パネル内の文字も強制的に再レンダリングさせる */
+    filter: blur(0px) !important;
+}
